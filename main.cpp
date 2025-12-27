@@ -1,8 +1,9 @@
 #include <iostream>
+#include <string>
 using namespace std;
 
-// Structure to store student data
-struct Student {
+class Student {
+public:
     int id;
     string name;
     int age;
@@ -13,6 +14,7 @@ void addStudent(Student students[], int &count);
 void displayStudents(Student students[], int count);
 void searchStudent(Student students[], int count);
 void deleteStudent(Student students[], int &count);
+bool isDuplicateID(Student students[], int count, int id);
 
 int main() {
     Student students[100];
@@ -29,29 +31,27 @@ int main() {
         cout << "Enter your choice: ";
         cin >> choice;
 
+        if (choice < 1 || choice > 5) {
+            cout << "Invalid choice! Please enter between 1 and 5.\n";
+            continue;
+        }
+
         switch (choice) {
             case 1:
                 addStudent(students, count);
                 break;
-
             case 2:
                 displayStudents(students, count);
                 break;
-
             case 3:
                 searchStudent(students, count);
                 break;
-
             case 4:
                 deleteStudent(students, count);
                 break;
-
             case 5:
                 cout << "Exiting program...\n";
                 break;
-
-            default:
-                cout << "Invalid choice! Try again.\n";
         }
 
     } while (choice != 5);
@@ -59,10 +59,28 @@ int main() {
     return 0;
 }
 
+// Check duplicate ID
+bool isDuplicateID(Student students[], int count, int id) {
+    for (int i = 0; i < count; i++) {
+        if (students[i].id == id) {
+            return true;
+        }
+    }
+    return false;
+}
+
 // Add student
 void addStudent(Student students[], int &count) {
+    int id;
     cout << "Enter ID: ";
-    cin >> students[count].id;
+    cin >> id;
+
+    if (isDuplicateID(students, count, id)) {
+        cout << "Error: Student ID already exists!\n";
+        return;
+    }
+
+    students[count].id = id;
 
     cout << "Enter Name: ";
     cin.ignore();
@@ -70,6 +88,11 @@ void addStudent(Student students[], int &count) {
 
     cout << "Enter Age: ";
     cin >> students[count].age;
+
+    if (students[count].age <= 0) {
+        cout << "Error: Age must be greater than 0.\n";
+        return;
+    }
 
     count++;
     cout << "Student added successfully!\n";
@@ -82,6 +105,7 @@ void displayStudents(Student students[], int count) {
         return;
     }
 
+    cout << "\n--- Student List ---\n";
     for (int i = 0; i < count; i++) {
         cout << "ID: " << students[i].id
              << ", Name: " << students[i].name
